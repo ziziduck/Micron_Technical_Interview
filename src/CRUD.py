@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, text
+from pathlib import Path
 import pandas as pd
 
 engine = create_engine(
@@ -6,10 +7,12 @@ engine = create_engine(
 )
 
 
+def load_sql(file_path):
+    return text(Path(file_path).read_text(encoding="utf-8"))
+
+
 def insert(name, dept, salary):
-    sql = text(
-        "INSERT INTO Employees (Name, Department, Salary) VALUES (:name, :dept, :salary)"
-    )
+    sql = load_sql("sql/insert_employee.sql")
     with engine.connect() as conn:
         conn.execute(sql, {"name": name, "dept": dept, "salary": salary})
         conn.commit()  # 務必 commit 才會真正寫入資料庫
@@ -17,7 +20,7 @@ def insert(name, dept, salary):
 
 
 def update(salary):
-    sql = text("UPDATE dbo.Employees SET Salary = :salary WHERE Name = 'test'")
+    sql = load_sql("sql/update_employee.sql")
     with engine.connect() as conn:
         conn.execute(sql, {"salary": salary})
         conn.commit()
@@ -25,7 +28,7 @@ def update(salary):
 
 
 def delete(name):
-    sql = text("DELETE FROM Employees WHERE Name = :name")
+    sql = load_sql("sql/delete_employee.sql")
     with engine.connect() as conn:
         conn.execute(sql, {"name": name})
         conn.commit()
@@ -33,9 +36,9 @@ def delete(name):
 
 
 def query_pandas(name):
-    sql = text("SELECT * FROM Employees")
+    sql = load_sql("sql/query_employee.sql")
     with engine.connect() as conn:
-        result = conn.execute(sql)
+        result = conn.execute(sql, {"name": name})
         # 我們使用 list(result.mappings()) 將所有結果轉為字典清單
         df = pd.DataFrame(result.mappings())
     print(f"[Query] 已查詢: {name}")
@@ -43,9 +46,9 @@ def query_pandas(name):
 
 
 def query_list(name):
-    sql = text("SELECT * FROM Employees")
+    sql = load_sql("sql/query_employee.sql")
     with engine.connect() as conn:
-        result = conn.execute(sql)
+        result = conn.execute(sql, {"name": name})
         data = result.mappings().all()
     print(f"[Query] 已查詢: {name}")
     return data
