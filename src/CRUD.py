@@ -12,7 +12,15 @@ def insert(name, dept, salary):
     with engine.connect() as conn:
         conn.execute(sql, {"name": name, "dept": dept, "salary": salary})
         conn.commit()  # 務必 commit 才會真正寫入資料庫
-    print(f"[Create] 已新增: {name} {dept}")
+    print(f"[Insert] 已新增: {name} {dept}")
 
 
-insert("test", "test", 1000)
+def update(salary):
+    sql = text("UPDATE dbo.Employees SET Salary = :salary WHERE Name = 'test'")
+    with engine.connect() as conn:
+        conn.execute(sql, {"salary": salary})
+        conn.commit()
+    print(f"[Update] 已修改: {salary}")
+
+
+update(10)
