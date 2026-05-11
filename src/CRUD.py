@@ -42,5 +42,14 @@ def query_pandas(name):
     return df
 
 
-df_result = query_pandas("test")
+def query_list(name):
+    sql = text("SELECT * FROM Employees")
+    with engine.connect() as conn:
+        result = conn.execute(sql)
+        data = result.mappings().all()
+    print(f"[Query] 已查詢: {name}")
+    return data
+
+
+df_result = query_list("test")
 print(df_result)
