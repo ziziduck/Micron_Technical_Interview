@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, text
+import pandas as pd
 
 engine = create_engine(
     "mssql+pyodbc://sa:Password123@127.0.0.1/Micron?driver=ODBC+Driver+17+for+SQL+Server"
@@ -31,4 +32,15 @@ def delete(name):
     print(f"[Delete] 已刪除: {name}")
 
 
-delete("test")
+def query_pandas(name):
+    sql = text("SELECT * FROM Employees")
+    with engine.connect() as conn:
+        result = conn.execute(sql)
+        # 我們使用 list(result.mappings()) 將所有結果轉為字典清單
+        df = pd.DataFrame(result.mappings())
+    print(f"[Query] 已查詢: {name}")
+    return df
+
+
+df_result = query_pandas("test")
+print(df_result)
