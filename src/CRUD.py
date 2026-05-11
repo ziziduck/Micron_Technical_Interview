@@ -23,4 +23,12 @@ def update(salary):
     print(f"[Update] 已修改: {salary}")
 
 
-update(10)
+def delete(name):
+    sql = text("DELETE FROM Employees WHERE Name = :name")
+    with engine.connect() as conn:
+        conn.execute(sql, {"name": name})
+        conn.commit()
+    print(f"[Delete] 已刪除: {name}")
+
+
+delete("test")
