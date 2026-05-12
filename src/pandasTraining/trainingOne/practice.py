@@ -50,4 +50,18 @@ df["Efficiency"] = df["Efficiency"].fillna(df["Efficiency"].mean())
 print(df)
 print("任務 2 結束")
 
-# 任務 3: 產出部門效能報表 (groupby + agg)
+# 任務 3: 分組、計算每個部門的平均效率與總機台數量、按照平均效率找出表現最差的部門，產出部門效能報表 (groupby + agg)
+
+# 分組計算：df.groupby('Department')['Output'].sum() (按部門算總產出)。
+dept_efficinecy = df.groupby("Dept")["Efficiency"].sum()
+# 多重聚合：.agg(['mean', 'max', 'count']) (一次看平均、最大值與數量)。
+dept_efficinecy_view = df.groupby("Dept")["Efficiency"].agg(["mean", "max", "count"])
+# 排序：df.sort_values(by='Efficiency', ascending=False)。
+efficinecy_sort = dept_efficinecy_view.sort_values(by="mean", ascending=True)
+# 重命名欄位
+efficinecy_sort.rename(  # inplace=False 會回傳新物件，反之會用原始物件進行修改
+    columns={"mean": "平均效率", "count": "機台總數"}, inplace=True
+)
+
+print(efficinecy_sort.head(1))
+print("任務 3 結束")
