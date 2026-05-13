@@ -72,3 +72,23 @@ print("任務 2 結束")
 # 1. 按 Dept (部門) 分組。
 # 2. 計算每個部門的 平均溫度、最大壓力 以及 異常發生次數 (Sum of Is_Anomaly)。
 # 3. 按照「異常發生次數」由高到低排序，找出目前風險最高的部門。
+
+# .agg({'col': ['func1', 'func2']}): 對不同欄位執行不同的聚合邏輯。
+report = df.groupby("Dept").agg(
+    {"Temperature": "mean", "Pressure": "max", "Is_Anomaly": "sum"}
+)
+report = report.sort_values(by="Is_Anomaly", ascending=False)
+print(f"風險最高部門： {report.index[0]}")
+# .pivot_table(): 將數據轉換為橫向對比格式（例如：各機台在各時段的表現）。
+pivot_report = df.pivot_table(
+    index=df.index,  # 使用 timestamp 作為縱軸
+    columns="Dept",  # 使用 Dept 作為橫軸
+    values="Is_Anomaly",  # 觀察異常狀態
+    aggfunc="max",  # 若同時間有多筆，取最大值(有異常則顯示1)
+)
+# .to_dict(orient='records'): 將分析結果實體化，準備對接 API 或是 Web 展示。
+web_output = report.reset_index().to_dict(orient="records")
+print("\n--- 準備提供給前端 API 的數據結構 ---")
+print(web_output)
+
+print("任務 3 結束")
