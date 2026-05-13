@@ -27,6 +27,20 @@ df = pd.read_sql("SELECT * FROM Sensor_Logs", engine)
 # 1. 請將原始數據中的 timestamp 轉換為正確的 datetime64 格式。
 # 2. 將該欄位設定為 DataFrame 的索引 (Index)，並檢查資料的時間範圍（從幾點到幾點）。
 
+# df.astype(): 精確控制記憶體與資料型別（例如將分類字串轉為 Category）。
+df["Dept"] = df["Dept"].astype("category")
+df["Temperature"] = df["Temperature"].astype("float32")
+df["Pressure"] = df["Pressure"].astype("float32")
+# pd.to_datetime(): 處理時間維度的核心，DSE 必須對時間極度敏感。
+df["timestamp"] = pd.to_datetime(df["timestamp"])
+# df.set_index(): 將時間設定為索引，便於進行時序切片。
+df = df.set_index("timestamp")
+start_time = df.index.min()
+end_time = df.index.max()
+print(f"開始時間： {start_time}，結束時間： {end_time}")
+
+print("任務 1 結束")
+
 # 第二階段：特徵工程與異常檢測 (Feature Engineering)
 # 1. 針對 Temperature 欄位，計算 3 筆資料長度的移動平均，並存入新欄位 temp_ma。
 # 2. 計算 Pressure 的瞬間變化絕對值（當前與前一筆的差），存入 press_delta。
