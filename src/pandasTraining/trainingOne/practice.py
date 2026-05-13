@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sqlalchemy import create_engine, text
 
 # --- 這是您的練習數據來源 ---
 data = {
@@ -10,6 +11,23 @@ data = {
 }
 # 建立資料框。
 df = pd.DataFrame(data)
+# 連接資料庫
+conn_str = "mssql+pyodbc://sa:Password123@127.0.0.1/Micron?driver=ODBC+Driver+17+for+SQL+Server"
+engine = create_engine(conn_str)
+df.to_sql("Machine_Logs", engine, if_exists="replace", index=False)
+# 讀取 Table 資料
+df = pd.read_sql("SELECT * FROM　Machine_Logs", engine)
+
+# 修改 Table 資料
+try:
+    with engine.begin() as conn:
+        conn.execute(
+            text("DELETE FROM Machine_Logs WHERE Machine_ID = :condition"),
+            {"condition": "M06"},
+        )
+    print("修改成功")
+except Exception as e:
+    print(f"修改失敗{e}")
 
 # --- 現在，請開始手寫以下任務 ---
 # 任務 1: 找出總筆數 (提示: df.shape 或 len())
