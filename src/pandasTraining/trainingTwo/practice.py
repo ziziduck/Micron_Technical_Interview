@@ -1,4 +1,5 @@
 import pandas as pd
+from sqlalchemy import create_engine, text
 
 # 模擬 DSE 原始感測器數據
 raw_data = {
@@ -14,6 +15,13 @@ raw_data = {
     "Temperature": [70.2, 71.5, 70.8, 85.0, 72.1, 71.3],  # 85.0 為突升異常
     "Pressure": [100, 102, 101, 95, 115, 110],  # 115 為劇烈波動
 }
+
+engine = create_engine(
+    "mssql+pyodbc://sa:Password123@127.0.0.1/Micron?driver=ODBC+Driver+17+for+SQL+Server"
+)
+df = pd.DataFrame(raw_data)
+df.to_sql("Sensor_Logs", engine, if_exists="replace", index=False)
+df = pd.read_sql("SELECT * FROM Sensor_Logs", engine)
 
 # 第一階段：高效資料轉換 (Data Engineering)
 # 1. 請將原始數據中的 timestamp 轉換為正確的 datetime64 格式。
