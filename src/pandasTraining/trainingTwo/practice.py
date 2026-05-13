@@ -46,6 +46,28 @@ print("任務 1 結束")
 # 2. 計算 Pressure 的瞬間變化絕對值（當前與前一筆的差），存入 press_delta。
 # 3. 標註異常：建立 Is_Anomaly 欄位，若 Temperature 高於其移動平均 5 度，或 Pressure 變化大於 10，則標註為 1，否則為 0。
 
+# .rolling(window=n).mean(): 移動平均（Smoothing），過濾掉隨機雜訊，找出趨勢。
+df["temp_ma"] = df["Temperature"].rolling(window=3).mean()
+df["temp_ma"] = df["temp_ma"].fillna(df["Temperature"])
+# .diff(): 計算與上一筆的差異，用於偵測瞬間突發狀況。
+df["press_delta"] = df["Pressure"].diff().abs()
+df["press_delta"] = df["press_delta"].fillna(0)
+
+
+# df.apply(axis=1)，axis會逐個處理，0是Column，1是row: 建立自定義的複雜業務邏輯判斷。
+def isAnomaly(row):
+    if (row["Temperature"] > row["temp_ma"] + 5) | (row["press_delta"] > 10):
+        return 1
+    return 0
+
+
+df["Is_Anomaly"] = df.apply(isAnomaly, axis=1)
+# 也可以使用 pandas 內建判斷。
+isAnomalyPD = (df["Temperature"] > df["temp_ma"] + 5) | (df["press_delta"] > 10)
+df["Is_Anomaly"] = isAnomalyPD.astype("int")
+
+print("任務 2 結束")
+
 # 第三階段：高級聚合與模型準備 (Analytics & Aggregation)
 # 1. 按 Dept (部門) 分組。
 # 2. 計算每個部門的 平均溫度、最大壓力 以及 異常發生次數 (Sum of Is_Anomaly)。
