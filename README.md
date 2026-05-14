@@ -62,3 +62,13 @@ engine = create_engine(conn_str)         # 3. 建立連線引擎
 # 4. 執行讀取
 df = pd.read_sql("SELECT * FROM Employees", engine)
 ```
+
+## 6. Python 套件練習
+1. 數據處理與清洗（核心基礎）
+- Pandas: 毫無疑問的霸主。用於處理生產線的時序資料（Time-series）、機台 Log。
+- NumPy: 用於高效能的數值運算，特別是處理感測器回傳的矩陣數據。
+- SQLAlchemy / pyodbc: 如我們之前討論的，這是您與資料庫（如 SQL Server, Oracle）溝通的橋樑。
+
+2. 數據分析與統計推論（Intelligence 來源）
+- SciPy: 用於科學計算，特別是製程控制中的機率分佈與統計檢定（如：判斷這批次的良率下降是否具備統計顯著性）。
+- Statsmodels: 用於更深入的統計模型，例如時間序列分析（ARIMA），預測未來的產能需求。
