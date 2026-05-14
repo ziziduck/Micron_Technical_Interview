@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sqlalchemy import create_engine, text
 
 raw_data = {
     "timestamp": [
@@ -16,7 +17,17 @@ raw_data = {
     "Efficiency": [0.9, 0.85, np.nan, 0.95, 0.88, 0.70],
 }
 
-df = pd.DataFrame(raw_data)
+try:
+    engine = create_engine(
+        "mssql+pyodbc://sa:Password123@127.0.0.1/Micron?driver=ODBC+Driver+17+for+SQL+Server"
+    )
+    pd.DataFrame(raw_data).to_sql(
+        "Machine_Final_Logs", engine, if_exists="replace", index=False
+    )
+    df = pd.read_sql("SELECT * FROM Machine_Final_Logs", engine)
+    print("初始資料存取成功")
+except Exception as e:
+    print(f"初始資料存取失敗: {e}")
 
 # 資料防禦與清洗：
 # 1. 移除 Efficiency 為空的行。
