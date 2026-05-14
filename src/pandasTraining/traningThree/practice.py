@@ -31,8 +31,21 @@ except Exception as e:
 
 # 資料防禦與清洗：
 # 1. 移除 Efficiency 為空的行。
+# df = df.dropna(subset=['Efficiency'])
+df = df[df["Efficiency"].notna()]
+
 # 2. 將 Pressure 欄位中所有負值（物理錯誤數據）強制修正為 0。
+# def fixPressure(row):
+#     if row["Pressure"] < 0:
+#         return 0
+#     return row["Pressure"]
+
+
+# df["Pressure"] = df.apply(fixPressure, axis=1)
+df["Pressure"] = df["Pressure"].clip(lower=0)
 # 3. 將 Dept 轉為 category 以優化記憶體。
+df["Dept"] = df["Dept"].astype("category")
+print("資料防禦與清洗完成")
 
 # 特徵與異常標註：
 # 1. 計算 Temperature 的 3 期移動平均 (temp_ma)。
