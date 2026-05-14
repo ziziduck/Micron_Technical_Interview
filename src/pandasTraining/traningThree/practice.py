@@ -49,8 +49,16 @@ print("資料防禦與清洗完成")
 
 # 特徵與異常標註：
 # 1. 計算 Temperature 的 3 期移動平均 (temp_ma)。
+df["temp_ma"] = df["Temperature"].rolling(window=3).mean()
 # 2. 建立 Warning_Score 欄位：Warning_Score = (Temperature - temp_ma) * 0.5 + (Pressure * 0.1)。
+df["Warning_Score"] = (df["Temperature"] - df["temp_ma"].fillna(0)) * 0.5 + (
+    df["Pressure"] * 0.1
+)
 # 3. 如果 Warning_Score > 10，則將 Is_Warning 標記為 1，否則為 0。
+is_warning = df["Warning_Score"] > 10
+df["Is_Warning"] = is_warning.astype("int")
+
+print("特徵與異常標註完成")
 
 # 報表聚合輸出：
 # 1. 按 Dept 分組，計算：平均 Efficiency、異常總數 sum(Is_Warning)。
