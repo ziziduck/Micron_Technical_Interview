@@ -62,5 +62,13 @@ print("特徵與異常標註完成")
 
 # 報表聚合輸出：
 # 1. 按 Dept 分組，計算：平均 Efficiency、異常總數 sum(Is_Warning)。
+report = df.groupby("Dept").agg({"Efficiency": "mean", "Is_Warning": "sum"})
 # 2. 排序輸出：找出 Is_Warning 總數最高的前 2 個部門名稱。
+top_warning = (
+    report.sort_values("Is_Warning", ascending=False).head(2).reset_index()["Dept"]
+)
 # 3. 交付格式：將最終的聚合報表轉換為 orient='records' 的列表格式。
+web_output = report.reset_index().to_dict(orient="records")
+print(web_output)
+
+print("報表聚合輸出完成")
