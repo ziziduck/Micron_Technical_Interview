@@ -35,7 +35,12 @@ print("任務 1 結束")
 # 資料對齊：將上述 NumPy 處理完的 Pressure 與 status_tags 塞回 DataFrame。
 # 空值防禦：移除 Efficiency 為空的行。
 # 移動特徵：計算 Temperature 的 3 期移動平均 (temp_ma)。
+df["Pressure"] = np.where(df["Pressure"] < 0, 0, df["Pressure"])
+df["status_tags"] = status_tags
+df = df[df["Efficiency"].notna()].reset_index(drop=True)
+df["temp_ma"] = df["Temperature"].rolling(3).mean()
 
+print("任務 2 結束")
 # [綜合輸出] 風險報表
 # 聚合統計：按 Dept 與 status_tags 分組。
 # 關鍵指標：計算各組的平均 Efficiency 與 Pressure 的最大值。
