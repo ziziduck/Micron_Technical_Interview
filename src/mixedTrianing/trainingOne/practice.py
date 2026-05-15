@@ -45,3 +45,10 @@ print("任務 2 結束")
 # 聚合統計：按 Dept 與 status_tags 分組。
 # 關鍵指標：計算各組的平均 Efficiency 與 Pressure 的最大值。
 # API 交付：將結果四捨五入到小於兩位，並轉為 orient='records' 的格式。
+report = df.groupby(["Dept", "status_tags"]).agg(
+    {"Efficiency": "max", "Pressure": "max"}
+)
+report = report.round(2)
+web_report = report.reset_index().to_dict(orient="records")
+
+print("任務 3 結束")
