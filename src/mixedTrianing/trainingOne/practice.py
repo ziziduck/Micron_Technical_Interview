@@ -25,6 +25,11 @@ df = pd.DataFrame(data)
 # 斷訊過濾：使用 np.where() 將 Pressure 中小於 0 的數值強制修正為 0。
 # 極速標註：使用 np.where() 建立一個 NumPy 陣列 status_tags。
 # 如果 Temperature > 90 且 Pressure > 110，標註為 "Critical"。否則標註為 "Normal"。
+df["Pressure"] = np.where(df["Pressure"] < 0, 0, df["Pressure"])
+status_tags = np.where(
+    (df["Temperature"] > 100) & (df["Pressure"] > 110), "Critical", "Normal"
+)
+print("任務 1 結束")
 
 # [Pandas 階段] 資料整合與時序分析
 # 資料對齊：將上述 NumPy 處理完的 Pressure 與 status_tags 塞回 DataFrame。
